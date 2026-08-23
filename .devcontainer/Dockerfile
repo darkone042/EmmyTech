@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     docker.io \
     chromium-browser \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -37,7 +38,10 @@ RUN apt-get update && apt-get install -y megatools
 RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared \
     && chmod +x /usr/local/bin/cloudflared
 
-# Install OpenCode
-RUN curl -fsSL https://opencode.ai | bash
+# Install OpenCode via npm (correct way)
+RUN npm install -g opencode-ai
+
+# Install OmniRoute globally
+RUN npm install -g omniroute
 
 WORKDIR /workspace
