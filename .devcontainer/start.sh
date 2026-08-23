@@ -4,6 +4,7 @@ set -e
 echo "========================================="
 echo "  STARTING TECH AGENCY SERVICES"
 echo "  OpenCode → Godmode → OmniRoute Chain"
+echo "  FULL ACCESS MODE (E2EE Enabled)"
 echo "========================================="
 
 # Start phpMyAdmin
@@ -34,18 +35,32 @@ cd /home/omniroute-src && npm run start 2>&1 > /workspace/logs/omniroute.log &
 
 sleep 5
 
-# Start OpenCode Web GUI
+# ======================================================================
+# OPTION 1: Start OpenCode Web GUI (Cloudflare accessible)
+# ======================================================================
 echo "💻 Starting OpenCode Web GUI on port 4096..."
 export OPENCODE_SERVER_PASSWORD="yoursecuredevpassword"
-opencode web --hostname 0.0.0.0 --port 4096 2>&1 > /workspace/logs/opencode.log &
+opencode web --hostname 0.0.0.0 --port 4096 2>&1 > /workspace/logs/opencode-web.log &
+
+sleep 3
+
+# ======================================================================
+# OPTION 2: Start OpenCode E2EE Remote Control (Full Access)
+# ======================================================================
+echo "🔐 Starting OpenCode E2EE Remote Control on port 4097..."
+export OPENCODE_REMOTE_SECRET="yourremotecontrolsecret"
+opencode remote --hostname 0.0.0.0 --port 4097 --secret "$OPENCODE_REMOTE_SECRET" 2>&1 > /workspace/logs/opencode-remote.log &
 
 sleep 10
 
-# Generate Cloudflare Tunnels
+# ======================================================================
+# Generate Cloudflare Tunnels for ALL services
+# ======================================================================
 echo "🌩️ Generating Cloudflare Tunnel Links..."
 echo "========================================="
 echo "  PUBLIC LINKS (Cloudflare Tunnels)"
 echo "========================================="
+
 echo "--> CodeIgniter App (Port 8080):"
 cloudflared tunnel --url http://localhost:8080 2>&1 | grep -E "https://.*\.trycloudflare\.com" || echo "  (Check terminal output for URL)"
 
@@ -61,5 +76,18 @@ cloudflared tunnel --url http://localhost:7860 2>&1 | grep -E "https://.*\.trycl
 echo "--> OpenCode Web GUI (Port 4096):"
 cloudflared tunnel --url http://localhost:4096 2>&1 | grep -E "https://.*\.trycloudflare\.com" || echo "  (Check terminal output for URL)"
 
+echo "--> OpenCode Remote Control E2EE (Port 4097):"
+cloudflared tunnel --url http://localhost:4097 2>&1 | grep -E "https://.*\.trycloudflare\.com" || echo "  (Check terminal output for URL)"
+
 echo "========================================="
 echo "✅ All services started!"
+echo ""
+echo "📝 ACCESS YOUR SERVICES:"
+echo "   - Web GUI: Open the OpenCode Web GUI link above"
+echo "   - Full Terminal Access: Use the Remote Control link"
+echo "   - Login: opencode / yoursecuredevpassword"
+echo ""
+echo "🔐 E2EE Remote Control:"
+echo "   - Open the Remote Control link"
+echo "   - Enter secret: yourremotecontrolsecret"
+echo "   - You now have FULL terminal access!"
