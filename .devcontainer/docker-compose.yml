@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=agency_db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=rootpassword
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "20128:20128"
+      - "7860:7860"
+      - "4096:4096"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=agency_db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./../schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+volumes:
+  mysql-data:
