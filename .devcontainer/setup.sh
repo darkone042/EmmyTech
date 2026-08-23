@@ -24,11 +24,75 @@ sudo cp /var/www/html/phpmyadmin/config.sample.inc.php /var/www/html/phpmyadmin/
 sudo sed -i "s/\['AllowNoPassword'\] = false;/\['AllowNoPassword'\] = true;/g" /var/www/html/phpmyadmin/config.inc.php 2>/dev/null || true
 
 # Download Tech Agency Template from Mega
-echo "📦 Downloading Tech Agency Template from Mega..."
-echo "⚠️ REPLACE THIS LINK WITH YOUR ACTUAL MEGA LINK"
-# megatools-dl --path /workspace https://mega.nz/YOUR_AGENCY_TEMPLATE_LINK
-# unzip /workspace/template.zip -d /workspace/
+echo "========================================="
+echo "  DOWNLOADING TEMPLATE FROM MEGA"
+echo "========================================="
 
+# Install megatools if not already installed
+if ! command -v megatools &> /dev/null; then
+    echo "🔧 Installing megatools..."
+    sudo apt-get update && sudo apt-get install -y megatools
+fi
+
+# Your Mega link - REPLACE THIS WITH YOUR ACTUAL LINK
+MEGA_LINK="https://mega.nz/YOUR_ACTUAL_MEGA_LINK"
+
+echo "📦 Downloading template from Mega..."
+echo "Link: $MEGA_LINK"
+
+# Download the file
+cd /workspace
+megatools-dl "$MEGA_LINK"
+
+# Check if download was successful
+if [ $? -ne 0 ]; then
+    echo "❌ Download failed! Please check your Mega link."
+    exit 1
+fi
+
+# Find the downloaded ZIP file
+echo "🔍 Looking for downloaded ZIP file..."
+ZIP_FILE=$(ls -t *.zip 2>/dev/null | head -n1)
+
+if [ -n "$ZIP_FILE" ]; then
+    echo "📂 Found ZIP file: $ZIP_FILE"
+    echo "📂 Extracting to /workspace/..."
+    
+    # Create extraction directory
+    EXTRACT_DIR="/workspace/tech-agency-template"
+    mkdir -p "$EXTRACT_DIR"
+    
+    # Extract the ZIP
+    unzip -o "$ZIP_FILE" -d "$EXTRACT_DIR"
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ Extraction complete! Files extracted to: $EXTRACT_DIR"
+        
+        # Optional: Move contents to root if needed
+        # If your ZIP has a single folder inside, you might want to move contents up
+        if [ $(ls -1 "$EXTRACT_DIR" | wc -l) -eq 1 ] && [ -d "$EXTRACT_DIR/$(ls "$EXTRACT_DIR")" ]; then
+            INNER_DIR="$EXTRACT_DIR/$(ls "$EXTRACT_DIR")"
+            echo "📂 Moving contents from $INNER_DIR to /workspace/..."
+            mv "$INNER_DIR"/* /workspace/ 2>/dev/null || true
+            mv "$INNER_DIR"/.* /workspace/ 2>/dev/null || true
+            rm -rf "$EXTRACT_DIR"
+        fi
+        
+        # Remove the ZIP file after extraction
+        rm -f "$ZIP_FILE"
+        echo "✅ Cleanup complete!"
+    else
+        echo "❌ Extraction failed!"
+        exit 1
+    fi
+else
+    echo "❌ No ZIP file found to extract!"
+    echo "📁 Files in /workspace/:"
+    ls -la /workspace/
+    exit 1
+fi
+
+echo "✅ Template download and extraction complete!"
 # CodeIgniter Setup
 echo "🔧 Setting up CodeIgniter..."
 cd /workspaces/${localWorkspaceFolderBasename}
