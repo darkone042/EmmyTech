@@ -1,5 +1,5 @@
 {
-  "name": "Tech Agency App - CodeIgniter + AI Stack",
+  "name": "Tech Agency App - CodeIgniter + AI Stack (Full Access)",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -17,10 +17,10 @@
       }
     }
   },
-  "forwardPorts": [8080, 8081, 20128, 7860, 4096],
+  "forwardPorts": [8080, 8081, 20128, 7860, 4096, 4097],
   "portsAttributes": {
     "8080": {
-      "label": "CodeIgniter Tech Agency",
+      "label": "CodeIgniter App",
       "onAutoForward": "openBrowser"
     },
     "8081": {
@@ -37,6 +37,10 @@
     },
     "4096": {
       "label": "OpenCode Web GUI",
+      "onAutoForward": "notify"
+    },
+    "4097": {
+      "label": "OpenCode Remote Control (E2EE)",
       "onAutoForward": "notify"
     }
   },
