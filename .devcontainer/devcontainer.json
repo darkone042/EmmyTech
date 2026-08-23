@@ -1,0 +1,45 @@
+{
+  "name": "Tech Agency App - CodeIgniter + AI Stack",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        "xdebug.php-debug",
+        "bmewburn.vscode-intelephense-client",
+        "ms-vscode.makefile-tools"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "forwardPorts": [8080, 8081, 20128, 7860, 4096],
+  "portsAttributes": {
+    "8080": {
+      "label": "CodeIgniter Tech Agency",
+      "onAutoForward": "openBrowser"
+    },
+    "8081": {
+      "label": "phpMyAdmin",
+      "onAutoForward": "notify"
+    },
+    "20128": {
+      "label": "OmniRoute Gateway",
+      "onAutoForward": "notify"
+    },
+    "7860": {
+      "label": "Godmode API",
+      "onAutoForward": "notify"
+    },
+    "4096": {
+      "label": "OpenCode Web GUI",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postAttachCommand": "bash .devcontainer/start.sh"
+}
