@@ -14,12 +14,15 @@ services:
       - MYSQL_DATABASE=agency_db
       - MYSQL_USER=root
       - MYSQL_PASSWORD=rootpassword
+      - OPENCODE_SERVER_PASSWORD=yoursecuredevpassword
+      - OPENCODE_REMOTE_SECRET=yourremotecontrolsecret
     ports:
       - "8080:8080"
       - "8081:8081"
       - "20128:20128"
       - "7860:7860"
       - "4096:4096"
+      - "4097:4097"
     depends_on:
       - mysql
 
