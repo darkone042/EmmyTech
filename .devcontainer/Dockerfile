@@ -1,14 +1,18 @@
-FROM mcr.microsoft.com/devcontainers/php:8.2
+FROM mcr.microsoft.com/devcontainers/base:ubuntu-22.04
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    php-intl \
-    php-mbstring \
-    php-mysql \
-    php-xml \
-    php-curl \
-    php-zip \
-    php-gd \
+    software-properties-common \
+    && add-apt-repository ppa:ondrej/php -y \
+    && apt-get update && apt-get install -y \
+    php8.2 \
+    php8.2-intl \
+    php8.2-mbstring \
+    php8.2-mysql \
+    php8.2-xml \
+    php8.2-curl \
+    php8.2-zip \
+    php8.2-gd \
     mysql-client \
     curl \
     wget \
@@ -19,17 +23,12 @@ RUN apt-get update && apt-get install -y \
     chromium-browser \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Install Node.js 20
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
-
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Install PHPMyAdmin
-RUN apt-get update && apt-get install -y \
-    phpmyadmin \
-    && rm -rf /var/lib/apt/lists/*
 
 # Install megatools
 RUN apt-get update && apt-get install -y megatools
